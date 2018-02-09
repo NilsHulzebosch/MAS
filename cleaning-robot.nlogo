@@ -11,7 +11,7 @@ end
 
 to setup-background
   ask patches [ set pcolor black ] ; background
-  ask patches [ ;; 1 out of 20 times, the patch color is set to grey
+  ask patches [ ;; 1 out of dust_percentage times, the patch color is set to grey
     if random 100 < dust_percentage [ set pcolor grey ]
   ]
 end
@@ -40,7 +40,6 @@ to go
 end
 
 to move-cleaner
-
   ask turtles [
     right random 360
     forward 1
@@ -156,7 +155,7 @@ dust_percentage
 dust_percentage
 0
 100
-100.0
+46.0
 1
 1
 %
@@ -169,7 +168,7 @@ PLOT
 414
 Amount of dust over time
 Time
-Dust
+NIL
 0.0
 10.0
 0.0
@@ -179,6 +178,7 @@ true
 "" ""
 PENS
 "Dust" 1.0 0 -16777216 true "" "plot count patches with [pcolor = grey]"
+"Energy" 1.0 0 -7500403 true "" "plot [energy] of turtle 0"
 
 @#$#@#$#@
 ## WHAT IS IT?
