@@ -11,7 +11,7 @@ end
 
 to setup-background
   ask patches [ set pcolor black ] ; background
-  ask patches [ ;; 1 out of dust_percentage times, the patch color is set to grey
+  ask patches [ ; 1 out of dust_percentage times, the patch color is set to grey
     if random 100 < dust_percentage [ set pcolor grey ]
   ]
 end
@@ -21,7 +21,7 @@ to setup-cleaner
   ask turtles [ setxy random-xcor random-ycor ]
   ask turtles [ set color pink ]
   ask turtles [ set shape "target" ]
-  ask turtles [ set size 4 ]
+  ask turtles [ set size 3 ]
 end
 
 ;to setup-charging-dock
@@ -57,10 +57,6 @@ to clean-dust
     [ set label energy ] ;; the label is set to be the value of the energy
     [ set label "" ]     ;; the label is set to an empty text value
   ]
-end
-
-to get-coordinates
-
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
