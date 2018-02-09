@@ -1,12 +1,15 @@
+extensions [sound]
 turtles-own [energy] ;; for keeping track of when the turtle is charged
                      ;; or needs to recharge at the dock
+
+globals [to-dock]
 
 
 to setup
   clear-all
   setup-background
+  setup-charging-dock
   setup-cleaner
-  ;setup-charging-dock
   reset-ticks
 end
 
@@ -17,41 +20,69 @@ to setup-background
   ]
 end
 
-to setup-cleaner
+to setup-charging-dock
   create-turtles 1
-  ask turtles [ setxy random-xcor random-ycor ]
-  ask turtles [ set color pink ]
-  ask turtles [ set shape "target" ]
-  ask turtles [ set size 3 ]
+  ask turtle 0 [ setxy random-pxcor random-pycor ]
+  ;ask turtles [ set color brown ]
+  ask turtle 0 [ set shape "testing" ]
+  ask turtle 0 [ set size 4 ]
 end
 
-;to setup-charging-dock
-;  create-turtles 1
-;  ask turtles [ setxy random-xcor random-ycor ]
-;  ;ask turtles [ set color brown ]
-;  ask turtles [ set shape "testing" ]
-;  ask turtles [ set size 6 ]
-;end
+to setup-cleaner
+  create-turtles 1
+  ask turtle 1 [ set energy init-energy ]
+  ask turtle 1 [ setxy [xcor] of turtle 0 [ycor] of turtle 0 ]
+  ask turtle 1 [ set color pink ]
+  ask turtle 1 [ set shape "target" ]
+  ask turtle 1 [ set size 3 ]
+end
+
 
 to go
+  ifelse  [distance turtle 1] of turtle 0 > [energy] of turtle 1 or to-dock = true
+  [ ifelse [distance turtle 1] of turtle 0 > 0.5
+    [set to-dock true
+      move-to-charger]
+    [charge]
+  ]
+
+  [
   move-cleaner
   clean-dust
-  ;check-energy
+  ]
 
   if count patches with [pcolor = grey] = 0 [stop]
   tick          ;; increase the tick counter by 1 each time through
 end
 
 to move-cleaner
-  ask turtles [
+  ask turtle 1 [
     face min-one-of patches with [ pcolor = grey ] [ distance myself ]
     forward 1
     set energy energy - 1  ;; when the turtle moves it looses one unit of energy
   ]
 end
 
+to move-to-charger
+  ask turtle 1 [
+    face turtle 0
+    forward 1
+  ]
+end
+
+to charge
+  ask turtle 1 [
+  ifelse energy < max-energy
+  [set energy energy + 1
+    ;sound:play-drum "ACOUSTIC SNARE" 64
+    ]
+  [set to-dock false]
+  ]
+
+end
+
 to clean-dust
-  ask turtles [
+  ask turtle 1 [
     if pcolor = grey [
       set pcolor black
       set energy energy - 1 ;; cleaning dust costs another unit of energy
@@ -107,10 +138,10 @@ NIL
 1
 
 BUTTON
-89
-39
-152
-72
+88
+38
+151
+71
 NIL
 go
 T
@@ -154,7 +185,7 @@ dust_percentage
 dust_percentage
 0
 100
-4.0
+27.0
 1
 1
 %
@@ -177,7 +208,48 @@ true
 "" ""
 PENS
 "Dust" 1.0 0 -16777216 true "" "plot count patches with [pcolor = grey]"
-"Energy" 1.0 0 -7500403 true "" "plot [energy] of turtle 0"
+"Energy" 1.0 0 -7500403 true "" "plot [energy] of turtle 1"
+
+SLIDER
+20
+327
+192
+360
+init-energy
+init-energy
+0
+max-energy
+125.0
+1
+1
+watt
+HORIZONTAL
+
+MONITOR
+109
+204
+166
+249
+energy
+[energy] of turtle 1
+17
+1
+11
+
+SLIDER
+19
+286
+191
+319
+max-energy
+max-energy
+0
+5000
+150.0
+10
+1
+watt
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
