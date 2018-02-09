@@ -12,7 +12,7 @@ end
 to setup-background
   ask patches [ set pcolor black ] ; background
   ask patches [ ;; 1 out of 20 times, the patch color is set to grey
-    if random 100 < 5 [ set pcolor grey ]
+    if random 100 < dust_percentage [ set pcolor grey ]
   ]
 end
 
@@ -42,7 +42,7 @@ end
 to move-cleaner
 
   ask turtles [
-    right random 5
+    right random 360
     forward 1
     set energy energy - 1  ;; when the turtle moves it looses one unit of energy
   ]
@@ -60,52 +60,18 @@ to clean-dust
   ]
 end
 
-;to eat-grass
-;  ask turtles [
-;    if pcolor = green [
-;      set pcolor black
-;           ;; the value of energy-from-grass slider is added to energy
-;      set energy energy + energy-from-grass
-;    ]
-;  ifelse show-energy?
-;    [ set label energy ] ;; the label is set to be the value of the energy
-;    [ set label "" ]     ;; the label is set to an empty text value
-;  ]
-;end
+to get-coordinates
 
-;to reproduce
-;  ask turtles [
-;    if energy > birth-energy [
-;      set energy energy - birth-energy  ;; take away birth-energy to give birth
-;      hatch 1 [ set energy birth-energy ] ;; give this birth-energy to the offspring
-;    ]
-;  ]
-;end
-
-;to check-death
-;  ask turtles [
-;    if energy <= 0 [ die ] ;; removes the turtle if it has no energy left
-;  ]
-;end
-
-;to regrow-grass
-;  ask patches [ ;; 3 out of 100 times, the patch color is set to green
-;    if random 100 < 3 [ set pcolor green ]
-;  ]
-;end
-
-
-;sound:play-drum "ACOUSTIC SNARE" 64
-;sound:play-note "TRUMPET" 60 64 2
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-647
-448
+219
+45
+799
+626
 -1
 -1
-13.0
+17.333333333333332
 1
 10
 1
@@ -143,10 +109,10 @@ NIL
 1
 
 BUTTON
-100
-44
-163
-77
+89
+39
+152
+72
 NIL
 go
 T
@@ -160,10 +126,10 @@ NIL
 0
 
 MONITOR
-30
-228
-110
-273
+20
+205
+100
+250
 dust count
 count patches with [pcolor = grey]
 17
@@ -171,15 +137,48 @@ count patches with [pcolor = grey]
 11
 
 SWITCH
-23
-139
-167
-172
+20
+161
+164
+194
 show-energy?
 show-energy?
 0
 1
 -1000
+
+SLIDER
+20
+112
+192
+145
+dust_percentage
+dust_percentage
+0
+100
+100.0
+1
+1
+%
+HORIZONTAL
+
+PLOT
+830
+46
+1411
+414
+Amount of dust over time
+Time
+Dust
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Dust" 1.0 0 -16777216 true "" "plot count patches with [pcolor = grey]"
 
 @#$#@#$#@
 ## WHAT IS IT?
