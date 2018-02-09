@@ -1,6 +1,7 @@
 turtles-own [energy] ;; for keeping track of when the turtle is charged
                      ;; or needs to recharge at the dock
 
+
 to setup
   clear-all
   setup-background
@@ -36,12 +37,14 @@ to go
   move-cleaner
   clean-dust
   ;check-energy
-  tick                    ;; increase the tick counter by 1 each time through
+
+  if count patches with [pcolor = grey] = 0 [stop]
+  tick          ;; increase the tick counter by 1 each time through
 end
 
 to move-cleaner
   ask turtles [
-    right random 360
+    face min-one-of patches with [ pcolor = grey ] [ distance myself ]
     forward 1
     set energy energy - 1  ;; when the turtle moves it looses one unit of energy
   ]
@@ -151,7 +154,7 @@ dust_percentage
 dust_percentage
 0
 100
-46.0
+4.0
 1
 1
 %
