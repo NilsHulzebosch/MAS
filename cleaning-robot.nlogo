@@ -6,6 +6,12 @@ turtles-own [energy bot_distance]
 
 globals [to-dock] ;; to keep track of the need to charge
 
+;;;;;;;;;;
+;; TODO
+;; - add agents beliefs, intentions, etc.
+;; - add nice sound effects
+;;;;;;;;;;
+
 
 to setup
   clear-all
@@ -82,14 +88,21 @@ to charge ;; while energy is not at maximum, increment energy with 1
       set to-dock false ;; the robot no longer needs to stay at charging-dock
     ]
   ]
-
 end
+
+to play-sound
+  sound:play-drum "MARACAS" 32
+  sound:play-note "TROMBONE" 50 64 0.05
+  wait 0.1
+end
+
 
 to clean-dust
   ask turtle 1 [
     if pcolor = grey [
       set pcolor black
       set energy energy - 1 ;; cleaning dust costs another unit of energy
+
     ]
     ifelse show-energy? [
       set label energy ;; the label is set to be the value of the energy
@@ -100,9 +113,9 @@ to clean-dust
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-517
+494
 10
-1049
+1026
 543
 -1
 -1
@@ -226,7 +239,7 @@ init-energy
 init-energy
 0
 max-energy
-100.0
+30.0
 10
 1
 Watt
@@ -252,7 +265,7 @@ max-energy
 max-energy
 0
 1000
-200.0
+120.0
 10
 1
 Watt
@@ -279,6 +292,23 @@ sound-effects?
 1
 1
 -1000
+
+BUTTON
+222
+38
+357
+71
+play sound (test)
+play-sound
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
