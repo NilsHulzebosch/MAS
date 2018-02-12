@@ -1,8 +1,10 @@
-extensions [sound]
-turtles-own [energy] ;; for keeping track of when the turtle is charged
-                     ;; or needs to recharge at the dock
+extensions [sound] ;; for nice sound effects during cleaning
 
-globals [to-dock]
+turtles-own [energy bot_distance]
+;; energy: for keeping track of charging need
+;; bot_distance: for keeping track of total distance covered by bot
+
+globals [to-dock] ;; to keep track of the need to charge
 
 
 to setup
@@ -14,23 +16,23 @@ to setup
 end
 
 to setup-background
-  ask patches [ set pcolor black ] ; background
-  ask patches [ ; 1 out of dust_percentage times, the patch color is set to grey
+  ask patches [ set pcolor black ] ;; background
+  ask patches [ ;; 1 out of dust_percentage times, the patch color is set to grey
     if random 100 < dust_percentage [ set pcolor grey ]
   ]
 end
 
-to setup-charging-dock
+to setup-charging-dock ;; place charging-dock at random position
   create-turtles 1
   ask turtle 0 [ setxy random-pxcor random-pycor ]
-  ;ask turtles [ set color brown ]
   ask turtle 0 [ set shape "testing" ]
   ask turtle 0 [ set size 4 ]
 end
 
-to setup-cleaner
+to setup-cleaner ;; place cleaning-robot at charging dock and init energy
   create-turtles 1
   ask turtle 1 [ set energy init-energy ]
+  ask turtle 1 [ set bot_distance 0 ]
   ask turtle 1 [ setxy [xcor] of turtle 0 [ycor] of turtle 0 ]
   ask turtle 1 [ set color pink ]
   ask turtle 1 [ set shape "target" ]
@@ -39,44 +41,46 @@ end
 
 
 to go
-  ifelse  [distance turtle 1] of turtle 0 > [energy] of turtle 1 or to-dock = true
-  [ ifelse [distance turtle 1] of turtle 0 > 0.5
-    [set to-dock true
-      move-to-charger]
-    [charge]
+  ifelse  [distance turtle 1] of turtle 0 > [energy] of turtle 1 or to-dock = true [
+    ifelse [distance turtle 1] of turtle 0 > 0.5 [
+      set to-dock true
+      move-to-charger
+    ] [
+      charge
+    ]
+  ] [
+    move-cleaner
+    clean-dust
   ]
 
-  [
-  move-cleaner
-  clean-dust
-  ]
-
-  if count patches with [pcolor = grey] = 0 [stop]
-  tick          ;; increase the tick counter by 1 each time through
+  if count patches with [pcolor = grey] = 0 [stop] ;; stop if there is no dust
+  tick ;; increase the tick counter by 1 each time through
 end
 
-to move-cleaner
+to move-cleaner ;; move to nearest dust
   ask turtle 1 [
     face min-one-of patches with [ pcolor = grey ] [ distance myself ]
     forward 1
+    set bot_distance bot_distance + 1
     set energy energy - 1  ;; when the turtle moves it looses one unit of energy
   ]
 end
 
-to move-to-charger
+to move-to-charger ;; move to charging-dock (turtle 0)
   ask turtle 1 [
     face turtle 0
     forward 1
+    set bot_distance bot_distance + 1
   ]
 end
 
-to charge
+to charge ;; while energy is not at maximum, increment energy with 1
   ask turtle 1 [
-  ifelse energy < max-energy
-  [set energy energy + 1
-    ;sound:play-drum "ACOUSTIC SNARE" 64
+  ifelse energy < max-energy [
+      set energy energy + 1
+    ] [
+      set to-dock false ;; the robot no longer needs to stay at charging-dock
     ]
-  [set to-dock false]
   ]
 
 end
@@ -87,20 +91,22 @@ to clean-dust
       set pcolor black
       set energy energy - 1 ;; cleaning dust costs another unit of energy
     ]
-    ifelse show-energy?
-    [ set label energy ] ;; the label is set to be the value of the energy
-    [ set label "" ]     ;; the label is set to an empty text value
+    ifelse show-energy? [
+      set label energy ;; the label is set to be the value of the energy
+    ] [
+      set label "" ;; the label is set to an empty text value
+    ]
   ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-219
-45
-799
-626
+517
+10
+1049
+543
 -1
 -1
-17.333333333333332
+15.9
 1
 10
 1
@@ -155,21 +161,21 @@ NIL
 0
 
 MONITOR
-20
-205
-100
-250
+10
+235
+110
+284
 dust count
 count patches with [pcolor = grey]
 17
 1
-11
+12
 
 SWITCH
-20
-161
-164
+18
 194
+162
+227
 show-energy?
 show-energy?
 0
@@ -177,25 +183,25 @@ show-energy?
 -1000
 
 SLIDER
-20
-112
-192
-145
+18
+80
+358
+113
 dust_percentage
 dust_percentage
 0
 100
-27.0
+30.0
 1
 1
 %
 HORIZONTAL
 
 PLOT
-830
-46
-1411
-414
+9
+292
+481
+544
 Amount of dust over time
 Time
 NIL
@@ -207,49 +213,72 @@ true
 true
 "" ""
 PENS
-"Dust" 1.0 0 -16777216 true "" "plot count patches with [pcolor = grey]"
-"Energy" 1.0 0 -7500403 true "" "plot [energy] of turtle 1"
+"Dust" 1.0 0 -9276814 true "" "plot count patches with [pcolor = grey]"
+"Energy" 1.0 0 -1184463 true "" "plot [energy] of turtle 1"
+"Distance" 1.0 0 -2674135 true "" "plot [bot_distance] of turtle 1"
 
 SLIDER
-20
-327
-192
-360
+18
+156
+358
+189
 init-energy
 init-energy
 0
 max-energy
-125.0
+100.0
+10
 1
-1
-watt
+Watt
 HORIZONTAL
 
 MONITOR
-109
-204
-166
-249
-energy
+119
+235
+229
+284
+energy count
 [energy] of turtle 1
 17
 1
-11
+12
 
 SLIDER
-19
-286
-191
-319
+18
+118
+358
+151
 max-energy
 max-energy
 0
-5000
-150.0
+1000
+200.0
 10
 1
-watt
+Watt
 HORIZONTAL
+
+MONITOR
+235
+235
+358
+284
+distance count
+[bot_distance] of turtle 1
+17
+1
+12
+
+SWITCH
+194
+194
+358
+227
+sound-effects?
+sound-effects?
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
